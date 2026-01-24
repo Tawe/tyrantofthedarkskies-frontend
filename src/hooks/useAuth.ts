@@ -15,7 +15,7 @@ interface UseAuthReturn {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  getIdToken: () => Promise<string | null>;
+  getIdToken: (forceRefresh?: boolean) => Promise<string | null>;
 }
 
 export function useAuth(): UseAuthReturn {
@@ -45,7 +45,7 @@ export function useAuth(): UseAuthReturn {
     return () => unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<void> => {
     if (!auth) {
       throw new Error('Firebase Auth is not initialized');
     }
@@ -55,7 +55,6 @@ export function useAuth(): UseAuthReturn {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       // Update user state immediately
       setUser(userCredential.user);
-      return userCredential;
     } catch (err) {
       const error = err as AuthError;
       setError(error.message);
@@ -63,7 +62,7 @@ export function useAuth(): UseAuthReturn {
     }
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string): Promise<void> => {
     if (!auth) {
       throw new Error('Firebase Auth is not initialized');
     }
@@ -73,7 +72,6 @@ export function useAuth(): UseAuthReturn {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       // Update user state immediately
       setUser(userCredential.user);
-      return userCredential;
     } catch (err) {
       const error = err as AuthError;
       setError(error.message);

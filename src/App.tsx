@@ -16,7 +16,7 @@ function App() {
   const [wsUrl, setWsUrl] = useState('');
   const [idToken, setIdToken] = useState<string | null>(null);
   const [characterName, setCharacterName] = useState('');
-  const { connected, connecting, messages, send, sendJson, connect, disconnect } = useWebSocket();
+  const { connected, connecting, messages, send, sendJson, connect } = useWebSocket();
   const { user, loading: authLoading, getIdToken } = useAuth();
   const reconnectAttemptsRef = useRef(0);
 
@@ -164,7 +164,7 @@ function App() {
   }, [messages, appState, characterName, send]);
 
 
-  const handleAuthenticated = async (authEmail: string, authPassword: string, authCharacterName?: string, token?: string | null) => {
+  const handleAuthenticated = async (_authEmail: string, _authPassword: string, authCharacterName?: string, token?: string | null) => {
     // If token wasn't provided, try to get it now
     let finalToken = token;
     if (!finalToken) {
