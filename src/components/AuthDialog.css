@@ -1,0 +1,125 @@
+.auth-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.auth-content {
+  background: #111;
+  border: 2px solid #0f0;
+  padding: 30px;
+  min-width: 400px;
+  max-width: 500px;
+  width: 90%;
+}
+
+.auth-content h2 {
+  color: #0f0;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.auth-subtitle {
+  color: #0aa;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 0.9em;
+}
+
+.auth-field {
+  margin-bottom: 15px;
+}
+
+.auth-field label {
+  display: block;
+  color: #0f0;
+  margin-bottom: 5px;
+  font-size: 0.9em;
+}
+
+.auth-field input {
+  width: 100%;
+  background: #000;
+  border: 1px solid #0f0;
+  color: #0f0;
+  padding: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.auth-field input:focus {
+  border-color: #0ff;
+  box-shadow: 0 0 5px #0ff;
+}
+
+.auth-field input:disabled {
+  background: #111;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.auth-error {
+  background: #300;
+  border: 1px solid #f00;
+  color: #f00;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 0.9em;
+}
+
+.auth-submit {
+  width: 100%;
+  background: #0f0;
+  color: #000;
+  border: none;
+  padding: 12px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.auth-submit:hover:not(:disabled) {
+  background: #0ff;
+}
+
+.auth-submit:disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.auth-toggle {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.auth-toggle button {
+  background: none;
+  border: none;
+  color: #0aa;
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  padding: 5px;
+}
+
+.auth-toggle button:hover:not(:disabled) {
+  color: #0ff;
+}
+
+.auth-toggle button:disabled {
+  color: #666;
+  cursor: not-allowed;
+}

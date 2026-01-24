@@ -1,0 +1,48 @@
+{
+  "name": "tyrantofthedarkskies-frontend",
+  "version": "1.0.0",
+  "description": "Web client for Tyrant of the Dark Skies MUD",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "serve": "vite preview",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:screenshot": "playwright test tests/screenshot.spec.ts --headed",
+    "screenshot": "npx playwright test tests/screenshot.spec.ts --headed"
+  },
+  "keywords": [
+    "mud",
+    "websocket",
+    "game",
+    "client",
+    "react"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/tyrantofthedarkskies-frontend.git"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zustand": "^4.4.7",
+    "firebase": "^10.7.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "playwright": "^1.40.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.8"
+  }
+}

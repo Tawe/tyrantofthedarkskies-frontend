@@ -1,0 +1,172 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Courier New', monospace;
+  background: #000;
+  color: #0f0;
+  overflow: hidden;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #000;
+}
+
+.header {
+  background: #111;
+  padding: 10px;
+  border-bottom: 2px solid #0f0;
+  text-align: center;
+}
+
+.header h1 {
+  color: #0f0;
+  font-size: 1.5em;
+}
+
+.status {
+  padding: 5px 10px;
+  background: #111;
+  border-bottom: 1px solid #0f0;
+  font-size: 0.9em;
+}
+
+.status.connected {
+  color: #0f0;
+}
+
+.status.disconnected {
+  color: #f00;
+}
+
+.status.connecting {
+  color: #ff0;
+}
+
+.main-output {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background: #000;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.main-output::-webkit-scrollbar {
+  width: 10px;
+}
+
+.main-output::-webkit-scrollbar-track {
+  background: #111;
+}
+
+.main-output::-webkit-scrollbar-thumb {
+  background: #0f0;
+  border-radius: 5px;
+}
+
+.output-line {
+  margin-bottom: 2px;
+}
+
+.input-container {
+  display: flex;
+  padding: 10px;
+  background: #111;
+  border-top: 2px solid #0f0;
+}
+
+.input-container input {
+  flex: 1;
+  background: #000;
+  border: 1px solid #0f0;
+  color: #0f0;
+  padding: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  outline: none;
+}
+
+.input-container input:focus {
+  border-color: #0ff;
+  box-shadow: 0 0 5px #0ff;
+}
+
+.input-container input:disabled {
+  background: #111;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.input-container button {
+  background: #0f0;
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  margin-left: 10px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
+.input-container button:hover:not(:disabled) {
+  background: #0ff;
+}
+
+.input-container button:disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* Connection dialog removed - using auto-detection */
+
+/* ANSI color classes */
+.ansi-black { color: #000; }
+.ansi-red { color: #f00; }
+.ansi-green { color: #0f0; }
+.ansi-yellow { color: #ff0; }
+.ansi-blue { color: #00f; }
+.ansi-magenta { color: #f0f; }
+.ansi-cyan { color: #0ff; }
+.ansi-white { color: #fff; }
+.ansi-bold { font-weight: bold; }
+
+/* Auth status */
+.connecting-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.connecting-message {
+  color: #ff0;
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.auth-status {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  border: 1px solid #0f0;
+  padding: 10px 20px;
+  color: #0f0;
+  z-index: 3000;
+}
