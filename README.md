@@ -52,7 +52,7 @@ To use the vanilla JS version:
 
 The client automatically detects the environment:
 - **Localhost**: Uses `ws://localhost:5557`
-- **Production**: Uses `wss://tyrant-of-dark-skies.fly.dev:5557`
+- **Production**: Uses `wss://tyrant-of-dark-skies.fly.dev` (port 443; Fly terminates TLS only on 443, not on :5557)
 
 To change the production server URL, edit `config.js` and update the `flyAppName` property.
 
@@ -75,7 +75,7 @@ tyrantofthedarkskies-frontend/
 The WebSocket URL is automatically configured based on your environment:
 
 - **Development**: `ws://localhost:5557` (when running on localhost)
-- **Production**: `wss://tyrant-of-dark-skies.fly.dev:5557` (when hosted)
+- **Production**: `wss://tyrant-of-dark-skies.fly.dev` (when hosted; port 443)
 
 To customize, edit `config.js`:
 
@@ -84,7 +84,7 @@ const config = {
     flyAppName: 'your-app-name',  // Change this for different Fly.io apps
     urls: {
         development: 'ws://localhost:5557',
-        production: 'wss://your-custom-url.com:5557'  // Or leave null for auto-generation
+        production: 'wss://your-custom-url.com'  // Or leave null for auto-generation; use 443 for Fly
     }
 };
 ```
@@ -154,15 +154,21 @@ All static hosts support custom domains. Point your DNS to your hosting provider
 
 ### Environment Variables
 
-If using a build system, you can set environment variables:
+For the React version, you can set environment variables in `.env`:
 
 ```bash
-# .env.development
-VITE_WS_URL=ws://localhost:5557
+# Firebase Configuration (Required)
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=tyrant-of-dark-skies.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=tyrant-of-dark-skies
 
-# .env.production
-VITE_WS_URL=wss://tyrant-of-dark-skies.fly.dev:5557
+# WebSocket URL (Optional - auto-detects if not set)
+VITE_WEBSOCKET_URL=wss://tyrant-of-dark-skies.fly.dev
 ```
+
+**For Netlify/Vercel deployments:**
+- Set these as environment variables in your hosting platform's dashboard
+- The WebSocket URL will be auto-detected, but you can override with `VITE_WEBSOCKET_URL`
 
 ## 🔗 Backend Repository
 

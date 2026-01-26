@@ -32,7 +32,7 @@ You're probably viewing the **vanilla JS version** (`index.html`) instead of the
 
 The app automatically detects:
 - **Localhost** → `ws://localhost:5557`
-- **Production** → `wss://tyrant-of-dark-skies.fly.dev:5557`
+- **Production** → `wss://tyrant-of-dark-skies.fly.dev` (port 443)
 
 No manual configuration needed!
 

@@ -16,8 +16,9 @@ export const config = {
    */
   getWebSocketUrl(env: 'development' | 'production' = 'development'): string {
     if (env === 'production') {
-      // Generate production URL from Fly.io app name
-      return this.urls.production || `wss://${this.flyAppName}.fly.dev:5557`;
+      // Generate production URL from Fly.io app name.
+      // Use port 443 (omit :5557): Fly terminates TLS only on 443; :5557 is raw TCP, so wss:// fails.
+      return this.urls.production || `wss://${this.flyAppName}.fly.dev`;
     }
     return this.urls.development;
   },
@@ -26,6 +27,11 @@ export const config = {
    * Auto-detect environment and return appropriate URL
    */
   getDefaultWebSocketUrl(): string {
+    // Allow override via environment variable (useful for Netlify, Vercel, etc.)
+    if (typeof window !== 'undefined' && import.meta.env.VITE_WEBSOCKET_URL) {
+      return import.meta.env.VITE_WEBSOCKET_URL;
+    }
+    
     // Check if we're on localhost (development)
     if (
       typeof window !== 'undefined' &&

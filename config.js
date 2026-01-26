@@ -16,8 +16,8 @@ const config = {
      */
     getWebSocketUrl(env = 'development') {
         if (env === 'production') {
-            // Generate production URL from Fly.io app name
-            return this.urls.production || `wss://${this.flyAppName}.fly.dev:5557`;
+            // Generate production URL from Fly.io app name. Use 443 (omit :5557): Fly terminates TLS only on 443.
+            return this.urls.production || `wss://${this.flyAppName}.fly.dev`;
         }
         return this.urls.development;
     }

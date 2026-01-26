@@ -274,6 +274,11 @@ function App() {
             <div style={{ fontSize: '12px', color: '#aaa', marginTop: '5px' }}>
               Expected: {wsUrl}
             </div>
+            {import.meta.env.VITE_WEBSOCKET_URL && (
+              <div style={{ fontSize: '11px', color: '#888', marginTop: '5px' }}>
+                (Using VITE_WEBSOCKET_URL override)
+              </div>
+            )}
           </div>
         )}
       </div>
