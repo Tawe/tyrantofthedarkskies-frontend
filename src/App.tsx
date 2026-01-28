@@ -5,7 +5,6 @@ import { AuthDialog } from './components/AuthDialog';
 import { StatusBar } from './components/StatusBar';
 import { MainOutput } from './components/MainOutput';
 import { InputPanel } from './components/InputPanel';
-import { FirebaseDebug } from './components/FirebaseDebug';
 import { config } from './config';
 import './App.css';
 
@@ -28,27 +27,54 @@ function App() {
   }, []); // Only run once on mount
 
   // Auto-login and auto-connect if user is already authenticated with Firebase
+  const connectingRef = useRef(false); // Guard against double-connection in Strict Mode
+  const isInitialMountRef = useRef(true); // Track if this is the first mount after page load
+  
   useEffect(() => {
     // Only connect if:
     // - Auth is loaded
     // - User is authenticated
     // - We have a WebSocket URL
-    // - We don't have a token yet (to avoid re-connecting)
     // - We're not already connected or connecting
-    if (!authLoading && user && !idToken && wsUrl && !connected && !connecting) {
-      // User is already logged in to Firebase, get token and auto-connect
-      getIdToken().then((token) => {
-        if (token) {
-          console.log('✅ Auto-login: User already authenticated with Firebase');
-          setIdToken(token);
-          // Auto-connect to detected WebSocket URL
-          connect(wsUrl);
-        }
-      }).catch((err) => {
-        console.error('❌ Failed to get ID token:', err);
-      });
+    // - We haven't already initiated a connection in this effect run
+    if (!authLoading && user && wsUrl && !connected && !connecting && !connectingRef.current) {
+      connectingRef.current = true; // Set guard immediately
+      
+      // On first mount after page load, add a small delay to let browser fully initialize
+      // On subsequent mounts (reloads), add a longer delay to let browser release previous connection
+      const delay = isInitialMountRef.current ? 100 : 500;
+      isInitialMountRef.current = false;
+      
+      setTimeout(() => {
+        // User is already logged in to Firebase, get token and auto-connect
+        getIdToken().then((token) => {
+          if (token) {
+            console.log('✅ Auto-login: User already authenticated with Firebase, token:', token.substring(0, 20) + '...');
+            setIdToken(token);
+
+            // Connect with onOpen callback to send auth immediately when socket opens
+            connect(wsUrl, () => {
+              console.log('🔐 WebSocket opened, sending auth token immediately');
+              sendJson({
+                type: 'auth',
+                token: token,
+              });
+            });
+          } else {
+            connectingRef.current = false; // Reset if no token
+          }
+        }).catch((err) => {
+          console.error('❌ Failed to get ID token:', err);
+          connectingRef.current = false; // Reset on error
+        });
+      }, delay);
     }
-  }, [authLoading, user, idToken, wsUrl, connected, connecting, getIdToken, connect]);
+    
+    // Reset guard when connected
+    if (connected) {
+      connectingRef.current = false;
+    }
+  }, [authLoading, user, wsUrl, connected, connecting, getIdToken, connect, sendJson]);
 
   // Auto-reconnect when disconnected (only in game state, with delay and max retries)
   const MAX_RECONNECT_ATTEMPTS = 3;
@@ -91,8 +117,25 @@ function App() {
         type: 'auth',
         token: idToken,
       });
+    } else if (connected && appState === 'auth' && !idToken) {
+      // Debug: connected but no token yet - try to get it
+      console.warn('⚠️ WebSocket connected but idToken not set yet. Attempting to get token...');
+      getIdToken().then((token) => {
+        if (token) {
+          console.log('✅ Got token after connection, sending auth');
+          setIdToken(token);
+          sendJson({
+            type: 'auth',
+            token: token,
+          });
+        } else {
+          console.error('❌ Could not get token after connection');
+        }
+      }).catch((err) => {
+        console.error('❌ Error getting token after connection:', err);
+      });
     }
-  }, [connected, appState, idToken, sendJson]);
+  }, [connected, appState, idToken, sendJson, getIdToken]);
 
   // Handle server responses (JSON messages)
   useEffect(() => {
@@ -188,9 +231,17 @@ function App() {
         setWsUrl(urlToUse);
       }
       if (!connected && !connecting) {
-        connect(urlToUse);
+        // Connect with onOpen callback to send auth immediately
+        connect(urlToUse, () => {
+          if (finalToken) {
+            console.log('🔐 WebSocket opened, sending auth token immediately');
+            sendJson({
+              type: 'auth',
+              token: finalToken,
+            });
+          }
+        });
       }
-      // Token will be sent automatically when connected (handled in useEffect above)
     } else {
       console.error('❌ No token available from Firebase auth. User may need to refresh the page.');
       // Still try to connect - server might handle email/password auth
@@ -243,7 +294,6 @@ function App() {
             }} 
             disabled={!connected} 
           />
-          <FirebaseDebug />
         </div>
       );
     }
@@ -293,7 +343,6 @@ function App() {
       <StatusBar connected={connected} connecting={connecting} />
       <MainOutput messages={messages} />
       <InputPanel onSend={handleSend} disabled={!connected} />
-      <FirebaseDebug />
     </div>
   );
 }

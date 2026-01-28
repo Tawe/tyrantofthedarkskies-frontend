@@ -2,51 +2,16 @@
 
 Web client for the Tyrant of the Dark Skies MUD (Multi-User Dungeon).
 
-## 📦 Two Versions Available
-
-This repository contains **two versions** of the client:
-
-1. **Vanilla JS** (`index-vanilla.html`) - Simple, no build step required
-2. **React** (`index.html` + `src/`) - Modern, extensible, component-based (default)
-
-### Which Should You Use?
-
-- **Vanilla JS**: Perfect for quick setup, simple deployments, or if you don't need advanced features
-- **React**: Recommended for adding quality-of-life features (inventory panels, stats sidebar, chat windows, etc.)
-
-See [README-REACT.md](README-REACT.md) for React setup instructions.
-
 ## 🚀 Quick Start
 
-### React Version (Default)
-
-The React version is now the default. See [README-REACT.md](README-REACT.md) for setup instructions.
+This is a React-based web client built with Vite, TypeScript, and Firebase authentication.
 
 ```bash
 npm install
 npm run dev
 ```
 
-### Vanilla JS Version
-
-To use the vanilla JS version:
-
-1. **Open the client:**
-   - Simply open `index-vanilla.html` in your web browser
-   - Or use a local server:
-     ```bash
-     # Using Python
-     python3 -m http.server 8000
-     
-     # Using Node.js (if you have it)
-     npx serve .
-     ```
-
-2. **Connect to the server:**
-   - Enter WebSocket URL (default: `ws://localhost:5557` for local development)
-   - Click "Connect"
-   - Enter your email/password when prompted
-   - Start playing!
+The app will be available at `http://localhost:3000`
 
 ### Production
 
@@ -60,12 +25,15 @@ To change the production server URL, edit `config.js` and update the `flyAppName
 
 ```
 tyrantofthedarkskies-frontend/
-├── index.html          # Main client interface
-├── config.js           # Configuration (WebSocket URLs, etc.)
+├── src/                # React source code
+│   ├── components/     # React components
+│   ├── hooks/          # Custom React hooks
+│   ├── firebase/       # Firebase configuration
+│   └── App.tsx         # Main app component
+├── public/             # Static assets
+├── tests/              # Playwright tests
 ├── README.md           # This file
-├── .gitignore          # Git ignore rules
-└── docs/               # Documentation
-    └── setup.md        # Setup guide
+└── .env                # Environment variables (not committed)
 ```
 
 ## ⚙️ Configuration
@@ -77,21 +45,7 @@ The WebSocket URL is automatically configured based on your environment:
 - **Development**: `ws://localhost:5557` (when running on localhost)
 - **Production**: `wss://tyrant-of-dark-skies.fly.dev` (when hosted; port 443)
 
-To customize, edit `config.js`:
-
-```javascript
-const config = {
-    flyAppName: 'your-app-name',  // Change this for different Fly.io apps
-    urls: {
-        development: 'ws://localhost:5557',
-        production: 'wss://your-custom-url.com'  // Or leave null for auto-generation; use 443 for Fly
-    }
-};
-```
-
-### Local Storage
-
-The client saves your WebSocket URL preference in browser local storage, so you don't have to re-enter it each time.
+To override, set `VITE_WEBSOCKET_URL` in your `.env` file.
 
 ## 🎮 Features
 
@@ -103,9 +57,13 @@ The client saves your WebSocket URL preference in browser local storage, so you 
 
 ## 🛠️ Development
 
-### No Build Process Required
+### Build
 
-This is a pure HTML/CSS/JavaScript client with no build step needed. Just edit the files and refresh your browser!
+```bash
+npm run build
+```
+
+This creates an optimized production build in the `dist/` directory.
 
 ### Testing & Screenshots with Playwright
 
@@ -128,14 +86,14 @@ npm run test:ui
 
 See [docs/playwright-setup.md](docs/playwright-setup.md) for detailed instructions.
 
-### Future Enhancements
+### Tech Stack
 
-Potential improvements for the future:
-- Split into modules (WebSocket, UI, commands)
-- Add build system (Vite, Webpack) for optimization
-- Extract CSS to separate file
-- Add TypeScript support
-- Mobile app (React Native, etc.)
+- **React 18** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
+- **Firebase** - Authentication
+- **WebSocket** - Real-time game communication
+- **Playwright** - Testing framework
 
 ## 🚢 Deployment
 
@@ -187,10 +145,10 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 
 ## 🙏 Acknowledgments
 
-- Built with vanilla HTML, CSS, and JavaScript
+- Built with React, TypeScript, and Vite
 - Connects to Python WebSocket server
 - Inspired by classic MUD clients
 
 ---
 
-**Ready to play?** Open `index.html` and connect to your server!
+**Ready to play?** Run `npm run dev` and connect to your server!

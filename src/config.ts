@@ -5,7 +5,8 @@ export const config = {
   
   // WebSocket URLs for different environments
   urls: {
-    development: 'ws://localhost:5557',
+    // Use 127.0.0.1 instead of localhost to avoid browser connection caching issues
+    development: 'ws://127.0.0.1:5557',
     production: null as string | null, // Will be generated from flyAppName
   },
   
