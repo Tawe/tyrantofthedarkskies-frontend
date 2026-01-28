@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 
+// Survives React Strict Mode unmount/remount so we don't lose the connection
+// when React does a fake unmount in dev.
+let sharedWs: WebSocket | null = null;
+let sharedWsUrl: string | null = null;
+
 interface UseWebSocketReturn {
   connected: boolean;
   connecting: boolean;
@@ -18,23 +23,35 @@ export function useWebSocket(): UseWebSocketReturn {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const connect = useCallback((url: string) => {
+    // Reuse existing connection after Strict Mode remount (same URL, still open)
+    if (sharedWs?.readyState === WebSocket.OPEN && sharedWsUrl === url) {
+      wsRef.current = sharedWs;
+      setConnected(true);
+      setConnecting(false);
+      sharedWs.onmessage = (event) => {
+        setMessages((prev) => [...prev, event.data]);
+      };
+      return;
+    }
+
     // Prevent multiple connection attempts
     if (wsRef.current?.readyState === WebSocket.OPEN) {
-      return; // Already connected
+      return;
     }
-    
     if (wsRef.current?.readyState === WebSocket.CONNECTING) {
-      return; // Already connecting
+      return;
     }
-    
-    // Clean up any existing connection
-    if (wsRef.current) {
+
+    // Clean up any existing connection before opening a new one
+    if (wsRef.current || sharedWs) {
       try {
-        wsRef.current.close();
+        (wsRef.current ?? sharedWs)?.close();
       } catch (e) {
         // Ignore errors when closing
       }
       wsRef.current = null;
+      sharedWs = null;
+      sharedWsUrl = null;
     }
 
     setConnecting(true);
@@ -45,13 +62,18 @@ export function useWebSocket(): UseWebSocketReturn {
         if (import.meta.env.DEV) {
           console.error('❌ WebSocket connection timeout after 5 seconds');
         }
-        if (wsRef.current) {
+        const toClose = wsRef.current;
+        if (toClose) {
           try {
-            wsRef.current.close();
+            toClose.close();
           } catch (e) {
             // Ignore errors
           }
           wsRef.current = null;
+          if (sharedWs === toClose) {
+            sharedWs = null;
+            sharedWsUrl = null;
+          }
         }
         setConnecting(false);
         setConnected(false);
@@ -60,6 +82,8 @@ export function useWebSocket(): UseWebSocketReturn {
     
     const ws = new WebSocket(url);
     wsRef.current = ws;
+    sharedWs = ws;
+    sharedWsUrl = url;
 
     ws.onopen = () => {
       // Clear timeout on successful connection
@@ -103,15 +127,26 @@ export function useWebSocket(): UseWebSocketReturn {
       if (import.meta.env.DEV) {
         console.log('🔌 WebSocket closed:', event.code, event.reason || 'No reason');
       }
+      wsRef.current = null;
+      if (sharedWs === ws) {
+        sharedWs = null;
+        sharedWsUrl = null;
+      }
       setConnected(false);
       setConnecting(false);
     };
   }, []);
 
   const disconnect = useCallback(() => {
-    if (wsRef.current) {
-      wsRef.current.close();
+    if (wsRef.current ?? sharedWs) {
+      try {
+        (wsRef.current ?? sharedWs)?.close();
+      } catch (e) {
+        // Ignore
+      }
       wsRef.current = null;
+      sharedWs = null;
+      sharedWsUrl = null;
     }
     setConnected(false);
     setConnecting(false);
@@ -144,15 +179,17 @@ export function useWebSocket(): UseWebSocketReturn {
     }
   }, []);
 
-  // Cleanup on unmount
+  // Cleanup on unmount: do NOT close the WebSocket here.
+  // React Strict Mode runs a fake unmount/remount in dev, which would close the
+  // socket right after connect/auth and cause "connection closes right away".
+  // We only close on explicit disconnect() or when the user closes the tab.
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
+      // Deliberately do not close wsRef.current here — avoids Strict Mode
+      // tearing down the connection. Socket is closed on disconnect() or tab close.
     };
   }, []);
 
