@@ -283,7 +283,7 @@ function App() {
             <h1>⚔️ Tyrant of the Dark Skies ⚔️</h1>
           </div>
           <StatusBar connected={connected} connecting={connecting} />
-          <MainOutput messages={messages} />
+          <MainOutput messages={messages} onCommandClick={(cmd) => send(cmd)} />
           <InputPanel 
             onSend={(cmd) => {
               // If we're waiting for character name, capture it
@@ -341,7 +341,7 @@ function App() {
         <h1>⚔️ Tyrant of the Dark Skies ⚔️</h1>
       </div>
       <StatusBar connected={connected} connecting={connecting} />
-      <MainOutput messages={messages} />
+      <MainOutput messages={messages} onCommandClick={(cmd) => handleSend(cmd)} />
       <InputPanel onSend={handleSend} disabled={!connected} />
     </div>
   );

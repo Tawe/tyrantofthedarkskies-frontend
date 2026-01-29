@@ -262,12 +262,26 @@ export function useWebSocket(): UseWebSocketReturn {
           // Not JSON, continue to text filtering
         }
         
-        // Skip "Invalid command format" messages
-        if (data.toLowerCase().includes('invalid command format')) {
+        // Skip entire message only for "Invalid command format"
+        const dataLower = data.toLowerCase();
+        if (dataLower.includes('invalid command format')) {
           return; // Don't add to messages array
         }
         
-        setMessages((prev) => [...prev, event.data]);
+        // Strip only lines containing "Combat environment" or "Room flags" (keep room description and exits)
+        let toDisplay = event.data;
+        if (dataLower.includes('combat environment') || dataLower.includes('room flags')) {
+          const lines = toDisplay.split(/\r?\n/);
+          const filtered = lines.filter(
+            (line) =>
+              !line.toLowerCase().includes('combat environment') &&
+              !line.toLowerCase().includes('room flags')
+          );
+          toDisplay = filtered.join('\n');
+        }
+        if (toDisplay.trim()) {
+          setMessages((prev) => [...prev, toDisplay]);
+        }
       };
       
       ws.onclose = (event) => {

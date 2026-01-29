@@ -76,6 +76,24 @@ body {
   margin-bottom: 2px;
 }
 
+/* Clickable command text (e.g. [West], [help]) */
+.output-command {
+  background-color: rgba(0, 255, 0, 0.2);
+  color: #0f0;
+  padding: 1px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+.output-command:hover {
+  background-color: rgba(0, 255, 255, 0.35);
+}
+.output-command:focus {
+  outline: 1px solid #0ff;
+  outline-offset: 1px;
+}
+
 .input-container {
   display: flex;
   padding: 10px;
