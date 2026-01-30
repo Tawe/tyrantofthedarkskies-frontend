@@ -273,7 +273,7 @@ export function useWebSocket(): UseWebSocketReturn {
         if (dataLower.includes('combat environment') || dataLower.includes('room flags')) {
           const lines = toDisplay.split(/\r?\n/);
           const filtered = lines.filter(
-            (line) =>
+            (line: string) =>
               !line.toLowerCase().includes('combat environment') &&
               !line.toLowerCase().includes('room flags')
           );
