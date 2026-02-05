@@ -10,6 +10,19 @@ const MOVEMENT_DIRECTIONS = new Set([
   'up', 'down', 'in', 'out',
 ]);
 
+/** Check if a message contains exit directions (indicates a room description) */
+function hasExitDirections(message: string): boolean {
+  const regex = /\[([^\]]+)\]/g;
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(message)) !== null) {
+    const command = match[1].trim().toLowerCase();
+    if (MOVEMENT_DIRECTIONS.has(command)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function parseMessageSegments(message: string): Segment[] {
   const segments: Segment[] = [];
   const regex = /\[([^\]]+)\]/g;
@@ -63,16 +76,15 @@ export function MainOutput({ messages, onCommandClick }: MainOutputProps) {
       {messages.map((message, lineIndex) => {
         const segments = parseMessageSegments(message);
         const hasCommands = segments.some((s) => s.type === 'command');
-        if (!hasCommands) {
-          return (
-            <div
-              key={lineIndex}
-              className="output-line"
-              dangerouslySetInnerHTML={{ __html: message }}
-            />
-          );
-        }
-        return (
+        const isRoomDescription = hasExitDirections(message);
+
+        const content = !hasCommands ? (
+          <div
+            key={lineIndex}
+            className="output-line"
+            dangerouslySetInnerHTML={{ __html: message }}
+          />
+        ) : (
           <div key={lineIndex} className="output-line">
             {segments.map((seg, segIndex) =>
               seg.type === 'text' ? (
@@ -100,6 +112,17 @@ export function MainOutput({ messages, onCommandClick }: MainOutputProps) {
             )}
           </div>
         );
+
+        if (isRoomDescription && lineIndex > 0) {
+          return (
+            <div key={`room-${lineIndex}`}>
+              <div className="room-divider" />
+              {content}
+            </div>
+          );
+        }
+
+        return content;
       })}
     </div>
   );

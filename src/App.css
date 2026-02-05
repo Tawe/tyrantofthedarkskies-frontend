@@ -76,6 +76,12 @@ body {
   margin-bottom: 2px;
 }
 
+.room-divider {
+  border-top: 1px solid #0f0;
+  margin: 15px 0;
+  opacity: 0.6;
+}
+
 /* Clickable command text (e.g. [West], [help]) */
 .output-command {
   background-color: rgba(0, 255, 0, 0.2);

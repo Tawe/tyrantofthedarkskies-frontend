@@ -324,7 +324,12 @@ function App() {
             <div style={{ fontSize: '12px', color: '#aaa', marginTop: '5px' }}>
               Expected: {wsUrl}
             </div>
-            {import.meta.env.VITE_WEBSOCKET_URL && (
+            {wsUrl.startsWith('ws://127.0.0.1') && (
+              <div style={{ fontSize: '11px', color: '#888', marginTop: '8px' }}>
+                Local dev: start the MUD server (e.g. on port 5557), or set VITE_WEBSOCKET_URL=wss://tyrant-of-dark-skies.fly.dev in .env to use the hosted server.
+              </div>
+            )}
+            {import.meta.env.VITE_WEBSOCKET_URL && !wsUrl.startsWith('ws://127.0.0.1') && (
               <div style={{ fontSize: '11px', color: '#888', marginTop: '5px' }}>
                 (Using VITE_WEBSOCKET_URL override)
               </div>
